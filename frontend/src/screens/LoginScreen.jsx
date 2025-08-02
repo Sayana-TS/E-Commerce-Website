@@ -1,14 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Row, Col } from 'react-bootstrap'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
+import { useLoginUserMutation } from "../slices/userApiSlice";
+import { useDispatch, useSelector } from 'react-redux'
+import { setCredentials } from '../slices/authSlice'
 
 function LoginScreen() {
+
+
+    const { userInfo } = useSelector((state) => state.auth)
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const submitHandler = () => { };
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    const [userLogin] = useLoginUserMutation()
+
+    const submitHandler = async (e) => {
+        e.preventDefault()
+        try {
+            let res = await userLogin({ email, password }).unwrap()
+            dispatch(setCredentials(res))
+            navigate('/')
+        } catch (error) {
+            console.log(error?.data?.message || error?.message);
+        }
+    };
+
+
+    useEffect(() => {
+        if (userInfo) {
+            navigate('/')
+        }
+    }, [userInfo])
 
     return (
         <FormContainer>
