@@ -4,16 +4,23 @@ import './assets/styles/bootstrap.custom.css'
 import './assets/styles/index.css'
 import LoginScreen from "./screens/LoginScreen"
 import RegisterScreen from "./screens/RegisterScreen"
+import Header from "./components/Header"
+import { Container } from "react-bootstrap"
 
 function App() {
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<HomeScreen/>} />
-        <Route path="/login" element={<LoginScreen/>} />
-        <Route path="/register" element={<RegisterScreen/>} />
-      </Routes>
+      <Header />
+      <main className="py-3">
+        <Container>
+          <Routes>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/login" element={<LoginScreen />} />
+            <Route path="/register" element={<RegisterScreen />} />
+          </Routes>
+        </Container>
+      </main>
     </>
   )
 }
