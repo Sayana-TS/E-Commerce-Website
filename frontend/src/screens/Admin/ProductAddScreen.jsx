@@ -1,10 +1,12 @@
 import React from 'react'
 import { useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom'
-import {Form, Button} from 'react-bootstrap'
+import { Link, useNavigate } from 'react-router-dom'
+import { Form, Button } from 'react-bootstrap'
 import FormContainer from '../../components/FormContainer'
 import Loader from '../../components/Loader'
 import Message from '../../components/Message';
+import { useCreateProductMutation } from '../../slices/productApiSlice';
+import { toast } from 'react-toastify'
 
 const ProductAddScreen = () => {
 
@@ -16,10 +18,33 @@ const ProductAddScreen = () => {
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
 
+  const [createProduct, { isLoading, error }] = useCreateProductMutation()
+
+  const navigate = useNavigate()
+
   const submitHandler = async (e) => {
     e.preventDefault();
-  };
+    try {
+      let data = new FormData()
 
+      data.append("name", name)
+      data.append("price", price)
+      data.append("brand", brand)
+      data.append("category", category)
+      data.append("countInStock", countInStock)
+      data.append("description", description)
+      data.append("image", image)
+
+      await createProduct(data).unwrap()
+
+      toast.success('Product Added Successfully')
+
+      navigate('/admin/productlist')
+
+    } catch (error) {
+      toast.error(error?.data || error?.data?.message)
+    }
+  };
 
   return (
     <>
@@ -28,7 +53,6 @@ const ProductAddScreen = () => {
       </Link>
       <FormContainer>
         <h1>Edit Product</h1>
-        {loadingUpdate && <Loader />}
         {isLoading ? (
           <Loader />
         ) : error ? (
@@ -53,21 +77,15 @@ const ProductAddScreen = () => {
                 onChange={(e) => setPrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
-            {/* <Form.Group controlId="image">
+            <Form.Group controlId="image">
               <Form.Label>Image</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter image url"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-              ></Form.Control>
+
               <Form.Control
                 label="Choose File"
-                onChange={uploadFileHandler}
+                onChange={(e) => { setImage(e.target.files[0]) }}
                 type="file"
               ></Form.Control>
-              {loadingUpload && <Loader />}
-            </Form.Group> */}
+            </Form.Group>
             <Form.Group controlId="brand">
               <Form.Label>Brand</Form.Label>
               <Form.Control
@@ -109,7 +127,7 @@ const ProductAddScreen = () => {
               variant="primary"
               style={{ marginTop: "1rem" }}
             >
-              Update
+              Add
             </Button>
           </Form>
         )}
