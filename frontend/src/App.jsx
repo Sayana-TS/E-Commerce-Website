@@ -6,8 +6,11 @@ import LoginScreen from "./screens/LoginScreen"
 import RegisterScreen from "./screens/RegisterScreen"
 import Header from "./components/Header"
 import { Container } from "react-bootstrap"
-import ToastContainer from "react-bootstrap"
+import {ToastContainer} from "react-toastify"
 import ProductListScreen from "./screens/Admin/ProductListScreen"
+import ProductAddScreen from "./screens/Admin/ProductAddScreen"
+import ProductEditScreen from "./screens/Admin/ProductEditScreen"
+import ProductScreen from "./screens/ProductScreen"
 
 function App() {
 
@@ -21,10 +24,12 @@ function App() {
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/register" element={<RegisterScreen />} />
 
-
+            <Route path="/product/:id" element={<ProductScreen/>} />
 
 
             <Route path="/admin/productlist" element={<ProductListScreen/>} />
+            <Route path="/admin/addProduct" element={<ProductAddScreen/>} />
+            <Route path="/admin/edit/:id" element={<ProductEditScreen/>} />
           </Routes>
         </Container>
       </main>

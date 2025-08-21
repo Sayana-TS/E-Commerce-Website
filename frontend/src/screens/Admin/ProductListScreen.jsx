@@ -3,9 +3,28 @@ import { useNavigate } from 'react-router-dom';
 import Loader from '../../components/Loader';
 import Message from '../../components/Message';
 import {FaPlus, FaEdit, FaTrash} from 'react-icons/fa'
+import { useGetAllProductsQuery, useDeleteProductMutation } from '../../slices/productApiSlice';
+import { toast } from 'react-toastify';
 
 
 const ProductListScreen = () => {
+
+  const {data : products, isLoading, error, refetch} = useGetAllProductsQuery()
+
+  const [deleteProduct] = useDeleteProductMutation()
+
+  const navigate = useNavigate()
+
+  const deleteHandler = async(productId) => {
+    try {
+      await deleteProduct(productId).unwrap()
+      toast.success('Product Deleted')
+      refetch()
+    } catch (error) {
+      toast.error(error?.data?.message || error?.message)
+    }
+  }
+
   return (
     <>
       <Row className="align-items-center">
@@ -13,7 +32,7 @@ const ProductListScreen = () => {
           <h1>Products</h1>
         </Col>
         <Col className="text-end">
-          <Button className="btn-sm m-3">
+          <Button className="btn-sm m-3" onClick={()=>navigate('/admin/addProduct')}>
             <FaPlus /> Create Product
           </Button>
         </Col>
@@ -44,7 +63,7 @@ const ProductListScreen = () => {
                   <td>{product.category}</td>
                   <td>{product.brand}</td>
                   <td>
-                    <Button variant="light" className="btn-sm mx-2">
+                    <Button variant="light" className="btn-sm mx-2" onClick={()=>navigate(`/admin/edit/${product._id}`)}>
                       <FaEdit />
                     </Button>
 

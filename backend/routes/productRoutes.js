@@ -6,6 +6,7 @@ import {
   getProducts,
   getProductById,
   updateProduct,
+  getAllProducts,
 } from "../controllers/productController.js";
 import { productParser } from "../config/upload.js";
 
@@ -16,11 +17,12 @@ productRoute
   .get(getProducts)
   .post(protect, admin, productParser.single("image"), createProduct);
 
+productRoute.route("/getAllProducts").get(protect, admin, getAllProducts);
+
 productRoute
   .route("/:id")
   .get(getProductById)
   .put(protect, admin, productParser.single("image"), updateProduct)
   .delete(protect, admin, deleteProduct);
 
-
-export default productRoute
+export default productRoute;

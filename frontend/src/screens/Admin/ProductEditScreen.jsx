@@ -1,14 +1,18 @@
-import React from 'react'
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'
-import { Form, Button } from 'react-bootstrap'
-import FormContainer from '../../components/FormContainer'
-import Loader from '../../components/Loader'
-import Message from '../../components/Message';
-import { useCreateProductMutation } from '../../slices/productApiSlice';
-import { toast } from 'react-toastify'
+import { useState, useEffect } from "react";
+import { Form, Button } from "react-bootstrap";
+import FormContainer from "../../components/FormContainer";
+import Loader from "../../components/Loader";
+import Message from "../../components/Message";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  useGetProductByIdQuery,
+  useUpdateProductMutation,
+  useGetAllProductsQuery,
+} from "../../slices/productApiSlice";
 
-const ProductAddScreen = () => {
+const ProductEditScreen = () => {
+  const { id: productId } = useParams();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
@@ -18,41 +22,61 @@ const ProductAddScreen = () => {
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
 
-  const [createProduct, { isLoading, error }] = useCreateProductMutation()
+  let {
+    data: product,
+    isLoading,
+    error,
+    refetch,
+  } = useGetProductByIdQuery(productId);
 
-  const navigate = useNavigate()
+  let [updateProduct, {isLoading : loadingUpdate}] = useUpdateProductMutation();
+
+  let { data, refetch: getAllProduct } = useGetAllProductsQuery();
+
+  let navigate = useNavigate();
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      let data = new FormData()
+      let data = new FormData();
 
-      data.append("name", name)
-      data.append("price", price)
-      data.append("brand", brand)
-      data.append("category", category)
-      data.append("countInStock", countInStock)
-      data.append("description", description)
-      data.append("image", image)
+      data.append("name", name);
+      data.append("price", price);
+      data.append("brand", brand);
+      data.append("category", category);
+      data.append("countInStock", countInStock);
+      data.append("description", description);
+      if(image) data.append('image', image)
 
-      await createProduct(data).unwrap()
+      await updateProduct({ productId, data }).unwrap();
 
-      toast.success('Product Added Successfully')
-
-      navigate('/admin/productlist')
-
+      toast.success("Product Updated");
+      refetch();
+      getAllProduct();
+      navigate("/admin/productlist");
     } catch (error) {
-      toast.error(error?.data || error?.data?.message)
+      toast.error(error?.data?.message || error?.message);
     }
   };
 
+
+  useEffect(() => {
+    if (product) {
+      setName(product.name);
+      setPrice(product.price);
+      setBrand(product.brand);
+      setCategory(product.category);
+      setCountInStock(product.countInStock);
+      setDescription(product.description);
+    }
+  }, [product]);
   return (
     <>
       <Link to="/admin/productlist" className="btn btn-light my-3">
         Go Back
       </Link>
       <FormContainer>
-        <h1>Add Product</h1>
+        <h1>Edit Product</h1>
         {isLoading ? (
           <Loader />
         ) : error ? (
@@ -82,7 +106,9 @@ const ProductAddScreen = () => {
 
               <Form.Control
                 label="Choose File"
-                onChange={(e) => { setImage(e.target.files[0]) }}
+                onChange={(e) => {
+                  setImage(e.target.files[0]);
+                }}
                 type="file"
               ></Form.Control>
             </Form.Group>
@@ -126,8 +152,9 @@ const ProductAddScreen = () => {
               type="submit"
               variant="primary"
               style={{ marginTop: "1rem" }}
+              disabled={loadingUpdate}
             >
-              Add
+              {loadingUpdate ? 'Update in Process...' : 'Update'}
             </Button>
           </Form>
         )}
@@ -136,4 +163,4 @@ const ProductAddScreen = () => {
   );
 };
 
-export default ProductAddScreen
+export default ProductEditScreen;

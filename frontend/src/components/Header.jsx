@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 function Header() {
-  const [userInfo] = useSelector((state) => state.auth);
+  const {userInfo} = useSelector((state) => state.auth);
   return (
     <>
       <header>
@@ -32,22 +32,21 @@ function Header() {
                   </Nav.Link>
                 )}
 
-                {
-                    userInfo  && userInfo.isAdmin && (
-                        <>
-                            <NavDropdown title={'Admin'} id="adminname">
-                                <NavDropdown.Item as={Link} to={'/admin/productlist'}>
-                                    Products
-                                </NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to={'/admin/orderlist'}>
-                                    Orders
-                                </NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to={'/admin/userlist'}>
-                                    Usres
-                                </NavDropdown.Item>
-                            </NavDropdown>
-                        </>
-                    )}
+                {userInfo && userInfo.isAdmin && (
+                  <>
+                    <NavDropdown title={"Admin"} id="adminname">
+                      <NavDropdown.Item as={Link} to={"/admin/productlist"}>
+                        Products
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} to={"/admin/orderlist"}>
+                        Orders
+                      </NavDropdown.Item>
+                      <NavDropdown.Item as={Link} to={"/admin/userlist"}>
+                        Usres
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                  </>
+                )}
               </Nav>
             </Navbar.Collapse>
           </Container>
