@@ -18,7 +18,7 @@ const updateCart = (state) => {
 
   localStorage.setItem("cart", JSON.stringify(state));
 
-  return state;
+  return state
 };
 
-export default updateCart;
+export default updateCart
